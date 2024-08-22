@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.3.5'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    archiveBaseName.set("utils")
+    archiveVersion.set(version)
+
+    manifest {
+        attributes(
+                'Implementation-Title': archiveBaseName.get(),
+                'Implementation-Version': archiveVersion.get()
+        )
+    }
+}
