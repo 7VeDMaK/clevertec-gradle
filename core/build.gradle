@@ -1,0 +1,5 @@
+dependencies {
+    implementation name: 'utils-1.3.5'
+}
+
+compileJava.dependsOn(':jar')

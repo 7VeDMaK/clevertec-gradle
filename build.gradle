@@ -26,31 +26,34 @@ jar {
     }
 }
 
+
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport // Отчет создается после выполнения тестов
+    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
-    dependsOn test // Тесты должны быть выполнены до генерации отчета
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml') // Сохраняем в корневую папку
-    }
+    dependsOn test
 }
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
 
+    group = 'org.example'
+    version = '1.3.5'
+
     repositories {
         mavenCentral()
+        flatDir {
+            dirs "$rootDir/build/libs"
+        }
     }
 
+
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+        testImplementation platform('org.junit:junit-bom:5.10.0')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
     }
 
     test {
@@ -58,7 +61,10 @@ subprojects {
     }
 
     jacocoTestReport {
-        enabled = false // Отключаем генерацию отчетов JaCoCo в модулях
+        dependsOn test
+        reports {
+            html.destination file("$rootDir/build/jacocoHtml")
+        }
     }
 }
 
@@ -71,8 +77,8 @@ tasks.register('jacocoRootReport', JacocoReport) {
     executionData = files(subprojects.jacocoTestReport.executionData, jacocoTestReport.executionData)
 
     reports {
-        xml.required = false
-        csv.required = false
-        html.destination file("${buildDir}/jacocoHtml") // Общая папка для всех отчетов
+        html.destination file("$rootDir/build/jacocoHtml")
     }
 }
+
+build.dependsOn jacocoRootReport
